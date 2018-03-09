@@ -195,8 +195,8 @@ class HomeBaseController extends BaseController
         if (empty($userId)) {
             //未登录直接跳转到首页
             //$this->redirect(url('portal/index/index'));
+            $this->redirect(url('user/login/login'));
             
-            $this->error("用户尚未登录", url("user/login/login"));
         }
     }
 
