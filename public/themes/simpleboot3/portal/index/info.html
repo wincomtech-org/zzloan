@@ -1,0 +1,51 @@
+<include file="public@head" />
+</head>
+<body class='backg-gray1'>
+    
+    <section class='hasBackGray'>
+        <header class='header-phpto backg-blue'>
+            <a href="{:url('user/info/setting')}"> <span class='icons icon_mess icon_mess_11' ></span></a>
+            <div class="photo_div">
+              <empty name="name">
+                <a href="{:url('user/login/login')}"><img src="{:cmf_get_image_url($avatar)}" alt="用户头像"></a>
+              
+              	<a href="{:url('user/login/login')}">登录/注册</a>
+              <else/>
+              	<a href="{:url('user/info/avatar')}"><img src="{:cmf_get_image_url($avatar)}" alt="用户头像"></a>
+              
+              	<a href="{:url('user/info/avatar')}">{$name}</a>
+               </empty>
+            </div>
+        </header>
+        <ul class="list-one">
+            <li class='list-one-li height-37 backg-white'>
+                <a href="{:url('user/paper/lists')}">
+                    <span class="icons icon_mess icon_mess_7"></span>
+                    我的账单
+                    <b class="icons icon_mess icon_arr"></b>
+                 </a>
+            </li>
+            <li class='list-one-li height-37 backg-white'>
+                <a href="{:url('portal/guide/help')}">
+                    <span class="icons icon_mess icon_mess_8"></span>
+                    帮助中心
+                    <b class="icons icon_mess icon_arr"></b>
+                </a>
+            </li>
+            <li class='list-one-li height-37 backg-white'>
+                <a href="{:url('portal/guide/brand')}">
+                    <span class="icons icon_mess icon_mess_9"></span>
+                    品牌介绍
+                    <b class="icons icon_mess icon_arr"></b>
+                </a>
+            </li>
+            <li class='list-one-li height-37 backg-white'>
+                <a href="{:url('portal/guide/agreements')}">
+                    <span class="icons icon_mess icon_mess_10"></span>
+                    相关协议
+                    <b class="icons icon_mess icon_arr"></b>
+                 </a>
+            </li>
+            
+        </ul>
+       <include file="public@user_foot" />

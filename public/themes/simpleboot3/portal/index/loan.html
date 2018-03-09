@@ -1,0 +1,163 @@
+<include file="public@head" />
+    <!-- 轮播图 -->
+    <link rel="stylesheet" href="__TMPL__/public/assets/css/slick.css">
+    <!-- 价格区间选择 -->
+    <link rel="stylesheet" href="__TMPL__/public/assets/css/range.css">
+   
+    
+    <script type="text/javascript" src="__TMPL__/public/assets/js/range.js"></script>
+    
+</head>
+<body>
+    <section class='hasNav'>
+        <!-- 轮播图 -->
+        <div class="slick">
+        <foreach name="banners" item="vo">
+        	<div>
+                <a href="{$vo.link}"><img src="{:cmf_get_image_url($vo.pic)}" alt="{$vo.name}"></a>
+            </div>
+        </foreach>
+          
+        </div>
+         <div class="gundong_div backg-white">
+            <span class='icons icon_mess icon_mess_18'></span>
+            <div id="gongao" class='backg-blue'> 
+                <div  id="scroll_div" class="scroll_div"> 
+                    <div id="scroll_begin"> 
+                     <foreach name="msgs" item="vo">
+                       <span>{$vo}</span> 
+			         </foreach>
+                         
+                    </div> 
+                    <div id="scroll_end"></div> 
+                </div> 
+            </div> 
+         </div>
+
+         <div class="select_div backg-white">
+            <div class='group-select'>
+                <p class='height-37 group-select-tit'>借款金额</p>
+                <div class="demo">
+                    <input type="hidden" class="single-slider" value="0" />
+                </div>
+            </div>
+            <div class='group-select'>
+                <p class='height-37 group-select-tit'>借款期限</p>
+                <div class="group-module">
+                 <foreach name="paper_days" item="vo" k="key">
+                    <div class="group_day"> 
+                        <input type="radio" name='days' id='day{$key}'>
+                        <label for='day{$key}' class='border-radius-4'><span>{$vo}</span>天</label>
+                    </div>
+                 </foreach> 
+                </div>    
+            </div>
+            <div class="slect_expenses">
+                <div class='emergency backg-white '>
+                    <p class='li-2nd group-select-tit'>综合费用 <span class='blue-text'><b class="money_total">100.00</b>元</span> <b class="icons icon_mess icon_arr"></b></p>
+                    <ul class="ul-2nd parent">
+                        <li class='expenses_li'>利息<span><em class="money_rate">0.00</em><em>元</em></span></li>
+                      
+                        <li class='expenses_li'>总计<span><em class="money_total">100.00</em><em>元</em></span></li>
+                        <div class="expenss_bc">
+                            <p class='height-37 red'>注：1.综合费用将在还款时一次性收取</p>
+                        </div>
+                    </ul>
+
+                </div>
+                
+            </div>  
+        </div>
+       
+     <button id="money_do" class='btn-red btn-small money_do'>确认借款</button>
+     <include file="public@psw" />   
+    <include file="public@user_foot" />   
+    <script src='__TMPL__/public/assets/js/slick.min.js'></script>      
+    <script>
+        
+        $('.slick').slick({
+            dots: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 4000
+        });
+        
+        ScrollImgLeft();
+        
+
+         // 价格区间选择
+         $('.single-slider').jRange({
+             from: {$paper_moneys[0]},
+             to: {$paper_moneys[1]},
+             step: 100,
+             scale: [1300,3000, 4500, 6000, 7500,9000],
+             showScale:false,
+             format:  '%s'+'元',
+             showLabels: true,
+            
+             ondragend:function(){
+                 // 得到天数，金钱
+                 b();
+             },
+             onbarclicked:function(){
+                // 得到天数，金钱
+                b();
+             }
+             
+         });
+         $('#day0').click();
+         b();
+         $('.demo').click(function(){
+             b();
+         });
+
+         $('.group_day label').click(function(){
+              $(this).siblings('input').click();
+              b();
+         });
+         // 得到天数，金钱
+         function b(){
+              var day=parseInt($('input[name="days"]:checked').siblings('label').find('span').text());
+              var money=parseInt($('.single-slider').val());
+              var rate=parseInt({$Think.config.rate});
+              
+              var money_rate=money*rate*day/36000;
+              var money_total=(money_rate+money).toFixed(2);
+              money_rate=(money_rate).toFixed(2);
+              $('.money_rate').text(money_rate);
+              $('.money_total').text(money_total);
+         }
+         $('#money_do').click(function(){
+        	 $('.pop_up1').show();
+         });
+         $('.sure-btn-2').click(function(){
+        	 var day=parseInt($('input[name="days"]:checked').siblings('label').find('span').text());
+             var money=parseInt($('.single-slider').val());
+             var psw=$.trim($('.promit-input').val());
+             if($.trim(psw) == '' || isPassword(psw) == false){
+                 $('input[name="password"]').focus();
+                 $('.error-tip').html('提示：请输入正确6位数字');
+                 return false;
+             }
+             $('.error-tip').text('正在登录'); 
+           //ajax提交
+             $.ajax({
+                 type: 'POST',
+                 url: "{:url('user/paper/ajax_send')}",
+                 dataType: 'json',
+                 data:{'day':day,'money':money,'psw':psw},
+                 success: function(data){
+                 	$('.error-tip').text(data.msg);
+                 	if(data.url!=''){
+                 		 location.href=data.url; 
+                 	}  
+                 },
+                 error: function(){
+                 	$('.error-tip').text('服务器连接失败');  
+                 }
+             });
+             return false;
+         });
+       
+    </script>        

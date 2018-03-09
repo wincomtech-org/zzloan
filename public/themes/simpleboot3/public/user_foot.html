@@ -1,0 +1,53 @@
+<!-- 个人中心底部 -->
+       <div class="list-tip-div">
+            <ul class='list-tip'>
+                <li class='blue-text'>{$Think.config.tel1}</li>
+                <li class='blue-text'>{$Think.config.tel2}</li>
+            </ul>
+        </div>
+    </section>  
+     <nav class='nav'>
+        <ul class='nav-ul width-100'>
+            <li class='nav-li'>
+            <eq name="html_page" value="loan"> 
+                <a href="{:url('portal/index/loan')}" class='blue-text'>
+                    <span class='icons icon_nav icon_nav1_1'></span>
+                    借款
+                </a>
+             <else/>
+             	<a href="{:url('portal/index/loan')}"  >
+                    <span class='icons icon_nav icon_nav1'></span>
+                    借款
+                </a>
+             </eq>
+            </li>
+            <li class='nav-li'>
+            <eq name="html_page" value="trust">
+                <a href="{:url('portal/index/trust')}" class='blue-text'>
+                    <span class='icons icon_nav icon_nav2_1'></span>
+                    认证
+                </a>
+             <else/>
+              	<a href="{:url('portal/index/trust')}" >
+                    <span class='icons icon_nav icon_nav2'></span>
+                    认证
+                </a>
+             </eq>
+            </li>
+            <li class='nav-li'>
+            <eq name="html_page" value="info">
+                <a href="{:url('portal/index/info')}" class='blue-text'>
+                    <span class='icons icon_nav icon_nav3_1'></span>
+                    我的
+                </a>
+            <else/>
+            	<a href="{:url('portal/index/info')}" >
+                    <span class='icons icon_nav icon_nav3'></span>
+                    我的
+                </a>
+            </eq>
+            </li>
+        </ul>
+    </nav>
+    <include file="public@foot" />  
+     

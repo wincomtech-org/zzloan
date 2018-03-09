@@ -1,0 +1,33 @@
+<include file="public@head" />
+</head>
+<body>
+        
+    <header class="phpto-center ">
+        <div class="phpto-center-div"><img src="{:cmf_get_image_url('logo.png')}" alt="">{$zztitle}
+        </div>
+    </header>
+    
+    <p class='p-line2'>
+     {$info.content|default=''}
+    </p>
+
+    <div class="brand_con">
+        <li>
+            <h3><span>产品特色</span></h3>
+        </li>
+       
+        <foreach name="list" item="vo" k="key">
+         <li>
+            <div class="brand_num blue-text">
+                {$key+1}
+            </div>
+            <div class="brand_list">
+                <b>{$vo.title}</b>
+                <i>{$vo.content}</i>
+            </div>
+        </li>
+       </foreach>
+        
+    </div>
+
+    <include file="public@foot" />

@@ -1,0 +1,43 @@
+<include file="public@head" />
+</head>
+<body class='backg-gray1'>
+    <section class='hasBackGray'>
+        <ul class="ul_level3 ">
+        <foreach name="list" item="vo" > 
+            <li class='li_level3 backg-white'>
+                <p class='level_3_1'> <span class="icons icon_mess icon_mess_12"></span>{$vo.name}</p>
+                <ul class="list-one">
+                <foreach name="vo.list" item="vv">
+                    <li class=' height-37 backg-white'>
+                        <div class="list-one-li level_3_2">
+                            	{$vv.title}
+                            <b class="icons icon_mess icon_arr"></b>
+                        </div>
+                        <p class='backg-gray1 level_3_3' style="display:none;">{$vv.content}</p>
+                    </li>
+                 </foreach>
+                    
+                </ul>
+            </li>
+           </foreach>
+            
+        </ul>
+
+    </section>
+   <include file="public@foot" />
+  <script>
+        $('.level_3_2').click(function(){
+            if($(this).siblings('p').css('display')=='none'){
+                
+                $('.level_3_3').hide();
+                $('.level_3_2').removeClass('active')
+                $(this).addClass('active')
+                $(this).siblings('p').show();
+                $(this).parent().css({"height":"auto"},{"line-height":"auto"})
+            }else{
+                $(this).removeClass('active')
+                $(this).siblings('p').hide();
+            }
+        })
+    </script>
+ 
