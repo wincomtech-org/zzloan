@@ -69,21 +69,8 @@
             }
 
         });
-        // 去除ios上传图片的问题
-        var file = document.querySelector('#img');
-        if (getIos()) {
-            file.removeAttribute("capture");
-        }
-        function getIos() {
-            var ua = navigator.userAgent.toLowerCase();
-            if (ua.match(/iPhone\sOS/i) == "iphone os") {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-      var click=0;
+       
+      
         // 身份证
        function formIdentity(form){
     	   if(click==0){
