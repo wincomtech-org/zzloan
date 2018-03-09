@@ -27,7 +27,7 @@
                         </div>
                     </li>
                     <li class='deuce_li  photos-li'>
-                        <p class='gray'>拍摄身份证正面的照片</p>
+                        <p class='gray'>拍摄身份证反面的照片</p>
                         <div class="photos_div backg-white border-radius-10">
                             <label class="input_div" for=''></label>
                             <input type="file" class='camera' id='camera2' name='camera2'>
@@ -57,11 +57,38 @@
       // 滚动条
       ScrollImgLeft();
 
+      var click=1;
+      $('.camera').change(function() {
+            var file = this.files[0];
+            var size=parseInt("{$Think.config.avatar_size}");
+            if(file.size>size){
+                click=1;
+                $('.error-tip').text('图片大小不能超过2M');
+            }else{
+                click=0;
+            }
+
+        });
+        // 去除ios上传图片的问题
+        var file = document.querySelector('#img');
+        if (getIos()) {
+            file.removeAttribute("capture");
+        }
+        function getIos() {
+            var ua = navigator.userAgent.toLowerCase();
+            if (ua.match(/iPhone\sOS/i) == "iphone os") {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
       var click=0;
         // 身份证
        function formIdentity(form){
     	   if(click==0){
     			click=1;
+              
     		}else{
     			return false;
     		}
