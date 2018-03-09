@@ -73,11 +73,11 @@
             url: "{:url('user/register/sendmsg')}",
             dataType: 'json',
             data:{'tel':tel,'idcard':idcard,'pic':pic},
-            success: function(data){
-            	// $('.captcha').attr('src',$('.captcha').attr('src')+'1');
+            success: function(data){ 
+            	$('.captcha').attr('src',$('.captcha').attr('src')+'1');
             	if(data.msg=='success'){ 
                      settime(obj);
-            	}else{ 
+            	}else{  
             		$('.error-tip').text(data.msg); 
             	} 
             },
@@ -85,6 +85,7 @@
             	$('.error-tip').text('服务器连接失败'); 
             }
         });
+    	
     	return false; 
     }   
         // 注册表单提交
