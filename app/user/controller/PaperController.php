@@ -25,7 +25,7 @@ class PaperController extends UserBaseController
     public function ajax_send(){
         $user0=Db::name('user')->where('id',session('user.id'))->find();
         if(empty($user0['is_name'])){
-            $this->error('没有实名认证，不能申请借款');
+            $this->error('没有实名认证，请先去认证，添加银行卡');
         }
         $data0=$this->request->param();
         //已用额度+借款金额>总额度
