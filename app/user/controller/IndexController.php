@@ -22,7 +22,9 @@ class IndexController extends UserBaseController
         
     }
      
-     
+     public function index(){
+         $this->redirect(url('portal/index/info'));
+     }
      
     /**
      * 前台ajax 判断用户登录状态接口

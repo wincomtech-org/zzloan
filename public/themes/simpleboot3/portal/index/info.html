@@ -7,11 +7,11 @@
             <a href="{:url('user/info/setting')}"> <span class='icons icon_mess icon_mess_11' ></span></a>
             <div class="photo_div">
               <empty name="name">
-                <a href="{:url('user/login/login')}"><img src="{:cmf_get_image_url($avatar)}" alt="用户头像"></a>
+                <a href="{:url('user/login/login')}"><img src="{:cmf_get_image_url($avatar)}" alt=""></a>
               
               	<a href="{:url('user/login/login')}">登录/注册</a>
               <else/>
-              	<a href="{:url('user/info/avatar')}"><img src="{:cmf_get_image_url($avatar)}" alt="用户头像"></a>
+              	<a href="{:url('user/info/avatar')}"><img src="{:cmf_get_image_url($avatar)}" alt=""></a>
               
               	<a href="{:url('user/info/avatar')}">{$name}</a>
                </empty>
