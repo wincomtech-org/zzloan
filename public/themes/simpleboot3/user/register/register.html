@@ -74,7 +74,7 @@
             dataType: 'json',
             data:{'tel':tel,'idcard':idcard,'pic':pic},
             success: function(data){
-            	$('.captcha').attr('src',$('.captcha').attr('src')+'1');
+            	// $('.captcha').attr('src',$('.captcha').attr('src')+'1');
             	if(data.msg=='success'){ 
                      settime(obj);
             	}else{ 

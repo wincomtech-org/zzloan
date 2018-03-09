@@ -715,13 +715,15 @@ p.li-2nd{
 .pic_photo{
     display:block;
     margin:.7rem auto;
-    width:11rem;
+    
 }
+
 .pic_photo img{
     display:block;
     width:7rem;
     height:7rem;
     margin:.3rem auto;
+    border:1px solid #ddd;
 
 }
 .pic_photo  a{
@@ -748,6 +750,7 @@ p.li-2nd{
     background-color:#e5e5e5;
     text-align:center;
     display:block;
+    margin:.6rem auto;
 }
 .label-img input{
     position:absolute;

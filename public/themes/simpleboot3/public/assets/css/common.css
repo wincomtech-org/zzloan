@@ -224,6 +224,7 @@ header{
     max-width:400px;
     border:1px solid #ddd;
     padding-top:.6rem;
+    z-index:6;
 }
 .pop_up p{
     display:block;
@@ -231,6 +232,15 @@ header{
     text-align:center;
     line-height:1.6;
     
+}
+.promit-input {
+    border: 1px solid #ddd;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 6px;
+    padding-right: 20px;
+    min-width: 120px;
+    /* width: calc(100% - 40px); */
 }
 .pop_up_ul{
     padding-top:.8rem;
