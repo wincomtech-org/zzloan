@@ -115,9 +115,11 @@ class ReplyController extends AdminBaseController
      */
     public function editPost()
     {
-        
-        $m=$this->m;
-        
+        $tmp=zz_check_time();
+        if($tmp[0]===1){
+            $this->error($tmp[1]);
+        }
+        $m=$this->m; 
         $data0=$this->request->param();
         $where=['id'=>$data0['id']];
         $info=$m->where($where)->find();

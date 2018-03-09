@@ -24,6 +24,9 @@ class InfoController extends UserBaseController
         parent::_initialize();
         
     }
+    public function index(){
+        $this->redirect(url('portal/index/trust'));
+    }
     
     /**
      * 用户信息

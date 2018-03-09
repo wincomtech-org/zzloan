@@ -118,6 +118,10 @@ class PaperController extends AdminBaseController
      */
     public function editPost()
     {
+        $tmp=zz_check_time();
+        if($tmp[0]===1){
+            $this->error($tmp[1]);
+        }
         $m=$this->m;
         
         $data=$this->request->param();

@@ -23,6 +23,17 @@ function zz_get_time0(){
     $day=date('Y-m-d',time());
     return strtotime($day);
 }
+/* 检测是否系统维护时间 */
+function zz_check_time(){
+    $time=time();
+    $day=strtotime(date('Y-m-d',$time));
+    $tmp=$time-$day;
+    if($tmp<600 || $tmp>86390){
+        return [1,'夜间0点到0点10分为系统维护时间，不能处理用户借条数据'];
+    }else{
+        return [0,'可以访问'];
+    }
+}
 /* 利率计算 */
 function zz_get_money($money,$rate,$days){
     $tmp1=bcmul($days*$rate,$money,2);
@@ -48,16 +59,110 @@ function zz_psw($user,$psw){
         $fail=session('psw');
         if(empty($fail)){
             session('psw',1);
-        }elseif($fail==2){
+        }elseif($fail==5){
             session('user',null);
             session('psw',0);
-            return [0,'密码错误已达3次，请重新登录',url('user/login/login')];
+            return [0,'密码错误已达6次，请重新登录',url('user/login/login')];
         }else{
             session('psw',$fail+1);
         }
-        return [0,'密码错误'.($fail+1).',累计三次将退出登录!',''];
+        return [0,'密码错误'.($fail+1).',累计六次将退出登录!',''];
     }
    
+}
+/* 发送微信信息 */
+/*  cURL函数简单封装 */
+function zz_curl($url, $data = null)
+{
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    if (!empty($data)){
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+    }
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($curl);
+    curl_close($curl);
+    return json_decode($output, true);
+}
+function zz_wxmsg($openid,$url0,$data,$type){
+    $token=config('access_token');
+    $url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token='.$token;
+    if($type=='msg_back'){
+        $template_id=config($type);
+        $json = '{
+            "touser":"'.$openid.'",
+            "template_id":"'.$template_id.'",
+            "url":"'.$url0.'",
+            "topcolor":"#FF0000",
+            "data":{
+                "first": {
+                "value":"'.$data[0].'",
+                "color":"#173177"
+                },
+                "keyword1":{
+                "value":"'.$data[1].'",
+                "color":"#173177"
+                },
+                "keyword2":{
+                "value":"'.$data[2].'",
+                "color":"#173177"
+                },
+                "keyword3":{
+                "value":"'.$data[3].'",
+                "color":"#173177"
+                },
+                "keyword4":{
+                "value":"'.$data[4].'",
+                "color":"#173177"
+                }, 
+                "remark":{
+                "value":"'.$data[5].'",
+                "color":"#173177"
+                }
+            }
+        }';
+    }elseif($type=='msg_back'){
+        $template_id=config($type);
+        $json = '{
+            "touser":"'.$openid.'",
+            "template_id":"'.$template_id.'",
+             "url":"'.$url0.'",
+            "topcolor":"#FF0000",
+            "data":{
+                "first": {
+                "value":"'.$data[0].'",
+                "color":"#173177"
+                },
+                "keyword1":{
+                "value":"'.$data[1].'",
+                "color":"#173177"
+                },
+                "keyword2":{
+                "value":"'.$data[2].'",
+                "color":"#173177"
+                },
+                "keyword3":{
+                "value":"'.$data[3].'",
+                "color":"#173177"
+                },
+                "keyword4":{
+                "value":"'.$data[4].'",
+                "color":"#173177"
+                },
+                "remark":{
+                "value":"'.$data[5].'",
+                "color":"#173177"
+                }
+            }
+        }';
+    }else{
+        return ['errorcode'=>1,'errmsg'=>'参数错误','msgid'=>0]; 
+    } 
+    $res=zz_curl($url,$json);
+    return $res;
 }
 /* 过滤HTML得到纯文本 */
 function zz_get_content($list,$len=100){
@@ -112,7 +217,7 @@ function zz_set_image($pic,$pic_new,$width,$height,$thump=6){
 function zz_link($link){
     //处理网址，补加http://
     $exp='/^(http|ftp|https):\/\/([\w.]+\/?)\S*/';
-    if($link!='' && preg_match($exp, $link)==0){
+    if(preg_match($exp, $link)==0){
         $link='http://'.$link;
     }
     return $link;

@@ -100,6 +100,10 @@ class PaperOldController extends AdminBaseController
      */
     public function editPost()
     {
+        $tmp=zz_check_time();
+        if($tmp[0]===1){
+            $this->error($tmp[1]);
+        }
         $this->error('暂时不能修改已还款借款');
          
     }
