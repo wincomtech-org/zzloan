@@ -9,17 +9,17 @@
     
 </head>
 <body>
-    <section class='hasNav'>
+    <section class='hasBackGray'>
         <!-- 轮播图 -->
         <div class="slick">
-        <foreach name="banners" item="vo">
-        	<div>
-                <a href="{$vo.link}"><img src="{:cmf_get_image_url($vo.pic)}" alt="{$vo.name}"></a>
-            </div>
-        </foreach>
+            <foreach name="banners" item="vo">
+                <div>
+                    <a href="{$vo.link}"><img src="{:cmf_get_image_url($vo.pic)}" alt="{$vo.name}"></a>
+                </div>
+            </foreach>
           
         </div>
-         <div class="gundong_div backg-white">
+        <div class="gundong_div backg-white">
             <span class='icons icon_mess icon_mess_18'></span>
             <div id="gongao" class='backg-blue'> 
                 <div  id="scroll_div" class="scroll_div"> 
@@ -32,9 +32,9 @@
                     <div id="scroll_end"></div> 
                 </div> 
             </div> 
-         </div>
+        </div>
 
-         <div class="select_div backg-white">
+        <div class="select_div backg-white">
             <div class='group-select'>
                 <p class='height-37 group-select-tit'>借款金额</p>
                 <div class="demo">
@@ -63,14 +63,16 @@
                             <p class='height-37 red'>注：1.综合费用将在还款时一次性收取</p>
                         </div>
                     </ul>
-
+                    
                 </div>
-                
-            </div>  
+                <div class='backg-white money_do'>
+                    <button id="money_do" class='backg-blue btn-small '>确认借款</button>
+                </div>
+           </div>  
         </div>
        
-     <button id="money_do" class='backg-blue btn-small money_do'>确认借款</button>
-     <include file="public@psw" />   
+    </section> 
+    <include file="public@psw" />   
     <include file="public@user_foot" />   
     <script src='__TMPL__/public/assets/js/slick.min.js'></script>      
     <script>
@@ -159,5 +161,20 @@
              });
              return false;
          });
+
+         hasNav();
+        function hasNav(){
+
+            var docH=$(document).height();
+            var navH=$('.nav').height();
+            var footH=$('.list-tip-div').height();
+            var footH1=$('.list-tip-div').css('padding-top').split('px')[0];
+            var footH2=$('.list-tip-div').css('padding-bottom').split('px')[0];
+            var x=parseInt(footH)+parseInt(footH1)+parseInt(footH2);
+            $('body').height(docH-navH )
+            $('.hasNav').css('padding-bottom',x+'px')
+            console.log(docH-navH+footH,x)
+
+        }
        
-    </script>        
+    </script>      

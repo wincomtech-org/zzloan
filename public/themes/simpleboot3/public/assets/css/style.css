@@ -200,11 +200,14 @@
     transform-origin:7px 13px;
 }
 nav{
+    border-top:3px solid #eee;
+}
+.nav{
     position:fixed;
     bottom:0;
     width:100%;
-    padding:.4rem 0 .2rem;
-    border-top:3px solid #eee;
+    padding:0 0 .2rem;
+    
     background-color:#fff;
 }
 .nav-li{
@@ -220,10 +223,10 @@ nav{
     background-color:#eee;
 }
 .list-tip-div{
-    position:absolute;
     bottom:0;
     width:100%;
-    padding:.8rem 0;
+    padding:1rem 0 .8rem;
+    background-color: #eee;
 }
 .list-tip li{
     font-size:1rem;
@@ -703,8 +706,9 @@ p.li-2nd{
     font-style:normal;
 }
 .money_do{
-    display:block;
-    margin:.5rem auto;
+    display: block;
+    padding: 1rem 0 1rem;
+    text-align: center;
 }
 
 /* 修改头像 */

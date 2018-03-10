@@ -4,6 +4,7 @@ function hasBackGray(){
     var navHeight=0,navPadTop=0,navPadBot=0;
     if($('body').children().hasClass('nav')){
         navHeight=$('.nav').height();
+        var footH=$('.list-tip-div').height();
         navPadTop=$('.nav').css('padding-top').split('px')[0];
         navPadBot=$('.nav').css('padding-top').split('px')[0];
     }
@@ -11,7 +12,7 @@ function hasBackGray(){
     var winHeight=$(window).height();
     var hesBackHei= winHeight - navHeight  -navPadTop - navPadBot ;
 
-    $('.hasBackGray').css('min-height', winHeight - navHeight  -navPadTop - navPadBot +'px') 
+    $('.hasBackGray').css('min-height', winHeight - navHeight  -navPadTop - navPadBot +footH +'px') 
 }
 
 function hasNav(){
