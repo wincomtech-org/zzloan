@@ -19,7 +19,7 @@ class IndexController extends HomeBaseController
     public function index()
     {
        
-        
+        $this->redirect(url('portal/index/loan'));
         //测试
         //$openid='oyHSG1Rq1YeiZ1o8OoqFyt4ri4yw'; 
         //检测网页授权
