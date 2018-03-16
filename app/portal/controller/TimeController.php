@@ -15,7 +15,7 @@ use think\db;
 /*处理每日定时任务  */
 class TimeController extends HomeBaseController
 {
-    /*处理每日定时任务，crontab每日0点01分执行  */
+    /*处理每日定时任务，crontab每日0点02分执行  */
     public function time()
     {
         zz_log('每日任务开始','time.log');
@@ -192,7 +192,7 @@ class TimeController extends HomeBaseController
        
        exit('执行结束');
     }
-    /*定时获取微信的access_tocken，crontab每小时30分执行 */
+    /*定时获取微信的access_tocken，crontab每小时32分执行 */
     public function wx_token()
     {
         zz_log('定时获取微信的access_tocken开始','time.log');
