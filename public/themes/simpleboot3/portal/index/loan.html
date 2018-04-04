@@ -131,6 +131,11 @@
               $('.money_total').text(money_total);
          }
          $('#money_do').click(function(){
+        	 var uid='{$Think.session.user.id|default=0}';
+        	 if(uid=='0'){
+        		 $('.error-tip').text('登录后才能借款');
+        		 location.href="{:url('user/login/login')}"; 
+        	 }
         	 $('.pop_up1').show();
          });
          $('.sure-btn-2').click(function(){
@@ -142,7 +147,7 @@
                  $('.error-tip').html('提示：请输入正确6位数字');
                  return false;
              }
-             $('.error-tip').text('正在登录'); 
+             $('.error-tip').text('正在提交'); 
            //ajax提交
              $.ajax({
                  type: 'POST',
@@ -152,7 +157,10 @@
                  success: function(data){
                  	$('.error-tip').text(data.msg);
                  	if(data.url!=''){
-                 		 location.href=data.url; 
+                 		setTimeout(function(){
+                			location.href=data.url; 
+                		},2000);
+                		
                  	}  
                  },
                  error: function(){

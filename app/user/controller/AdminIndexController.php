@@ -41,6 +41,13 @@ use think\Db;
 class AdminIndexController extends AdminBaseController
 {
 
+    public function _initialize()
+    {
+        parent::_initialize();
+        
+        $this->assign('name_status',[0=>'未认证',1=>'已认证']);
+        $this->assign('time_status',[0=>'未提交更新',1=>'已提交更新']);
+    }
     /**
      * 后台本站用户列表
      * @adminMenu(
@@ -56,6 +63,7 @@ class AdminIndexController extends AdminBaseController
      */
     public function index()
     {
+        
         $where   = ['user_type'=>2];
         $request = input('request.');
 
@@ -69,11 +77,12 @@ class AdminIndexController extends AdminBaseController
             $keywordComplex['user_login|user_nickname|mobile']    = ['eq', $keyword];
         }
         $usersQuery = Db::name('user'); 
-        $list = $usersQuery->whereOr($keywordComplex)->where($where)->order("create_time DESC")->paginate(10);
+        $list = $usersQuery->whereOr($keywordComplex)->where($where)->order("is_time desc,time desc,id desc")->paginate(10);
         // 获取分页显示
         $page = $list->render();
         $this->assign('list', $list);
         $this->assign('page', $page);
+       
         // 渲染模板输出
         return $this->fetch();
     }
@@ -157,7 +166,8 @@ class AdminIndexController extends AdminBaseController
         $info['pic2']=$tmp.'camera2.jpg';
         $info['pic3']=$tmp.'camera3.jpg';
         $info['more']=json_decode($info['more'],true);
-        
+        $info['more']['mobile_file_url']=empty($info['more']['mobile_file_url'])?'':$info['more']['mobile_file_url'];
+        $info['more']['mobile_file_name']=empty($info['more']['mobile_file_name'])?'':$info['more']['mobile_file_name'];
         $this->assign('info',$info);
         return $this->fetch();
     }
@@ -193,21 +203,93 @@ class AdminIndexController extends AdminBaseController
             'action'=>'对用户'.$user['user_nickname'].'的操作:', 
         ];
         $action=0;
+        if($user['is_record']!=$data['is_record']){
+            $action=1;
+            $data_action['action'].='更改运营商认证'.$user['is_record'].'为'.$data['is_record'].'。';
+        }
+        if($user['is_xuexin']!=$data['is_xuexin']){
+            $action=1;
+            $data_action['action'].='更改资质认证'.$user['is_xuexin'].'为'.$data['is_xuexin'].'。';
+        }
         if($user['is_name']!=$data['is_name']){
             $action=1;
-            $data_action['action'].='更改实名认证'.$user['is_name'].'为'.$data['is_name'].'.';
+            $data_action['action'].='更改资质认证'.$user['is_name'].'为'.$data['is_name'].'。';
         }
         if($user['money0']!=$data['money0']){
             $action=1;
-            $data_action['action'].='修改额度'.$user['money0'].'为'.$data['money0'].'.'; 
+            $data_action['action'].='修改额度'.$user['money0'].'为'.$data['money0'].'。'; 
         }
+        if($user['money0']!=$data['money0']){
+            $action=1;
+            $data_action['action'].='修改额度'.$user['money0'].'为'.$data['money0'].'。';
+        }
+        $more=json_decode($user['more'],true);
+        $path=getcwd().'/upload/';
+        if(is_file($path.$data['mobile_file_url'])){
+            $more['mobile_file_url']=empty($more['mobile_file_url'])?'':$more['mobile_file_url'];
+            $more['mobile_file_name']=empty($more['mobile_file_name'])?'':$more['mobile_file_name'];
+            if($data['mobile_file_url']!=$more['mobile_file_url']){
+                $action=2;
+                $data_action['action'].='上传了运营商信息文件。';
+                $more['mobile_file_url']=$data['mobile_file_url'];
+            }
+            if($data['mobile_file_name']!=$more['mobile_file_name']){
+                $action=2;
+                $data_action['action'].='修改了运营商信息文件名。';
+                $more['mobile_file_name']=$data['mobile_file_name'];
+            }
+           
+        }
+        unset($data['mobile_file_url']);
+        unset($data['mobile_file_name']);
         if($action==0){ 
             $this->success('未修改',url('index'));
         }else{
+            if($action==2){
+                $data['more']=json_encode($more);
+            }
             $m_user->where('id',$data['id'])->update($data);
             Db::name('action')->insert($data_action);
             $this->success('保存成功',url('index'));
         }
       
+    }
+    /**
+     * 本站用户删除
+     * @adminMenu(
+     *     'name'   => '本站用户删除',
+     *     'parent' => 'index',
+     *     'display'=> false,
+     *     'hasView'=> false,
+     *     'order'  => 10000,
+     *     'icon'   => '',
+     *     'remark' => '本站用户删除',
+     *     'param'  => ''
+     * )
+     */
+    public function delete()
+    {
+        
+        $id = $this->request->param('id', 0, 'intval');
+        $where=['status'=>['gt',2],'borrower_id'=>['eq',$id]];
+        $m_paper=Db::name('paper');
+        $count=$m_paper->where($where)->count();
+        if($count>0){
+            $this->error('会员有借款未还，不能删除！');
+        }
+        $m_paper->startTrans();
+        unset($where['status']);
+        
+        $m_paper->where($where)->delete();
+        
+        $result = Db::name("user")->where(["id" => $id, "user_type" => 2])->delete();
+        if ($result) {
+            $m_paper->commit();
+            $this->success("会员删除成功！");
+        } else {
+            $m_paper->rollback();
+            $this->error('会员删除失败,会员不存在！');
+        }
+        
     }
 }

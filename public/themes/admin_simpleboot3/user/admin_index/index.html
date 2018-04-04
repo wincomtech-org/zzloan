@@ -32,7 +32,8 @@
                 <th>{:lang('REGISTRATION_TIME')}</th>
                 <th>{:lang('LAST_LOGIN_TIME')}</th>
                 <th>{:lang('LAST_LOGIN_IP')}</th> 
-                 
+                 <th>信息认证</th>
+                
                 <th>{:lang('STATUS')}</th>
                 <th>{:lang('ACTIONS')}</th>
             </tr>
@@ -46,7 +47,7 @@
                     <td>{$vo.id}</td>
                     <td>{$vo['user_login']}
                     </td>
-                    <td>{$vo['user_nickname']}|<eq name="vo.is_name" value="1">已认证<else/>未认证</eq></td>
+                    <td>{$vo['user_nickname']}</td>
                     <td><img width="25" height="25" src="{:cmf_get_image_url($vo.avatar)}"/></td>
                     
                     <td>{$vo.mobile}</td>
@@ -59,8 +60,14 @@
                     <td>{:date('Y-m-d H:i',$vo['create_time'])}</td>
                     <td>{:date('Y-m-d H:i',$vo['last_login_time'])}</td>
                     <td>{$vo.last_login_ip}</td>
+                    <td>{$name_status[$vo.is_name]}|
+                    	 {$time_status[$vo.is_time]} 
+                    </td>
                     <td>{$user_statuses[$vo['user_status']]}</td>
                     <td>
+                    <a href="{:url('delete',array('id'=>$vo['id']))}" class="js-ajax-delete"
+                                data-msg="确认删除吗？有未还借款的用户不能删除，删除用户后用户未生效的借款信息同时删除!">删除</a>
+                      &nbsp; &nbsp; &nbsp;
                         <empty name="vo.user_status">
                              <a href="{:url('cancelban',array('id'=>$vo['id']))}"
                                 class="js-ajax-delete"

@@ -192,11 +192,17 @@ class HomeBaseController extends BaseController
     public function checkUserLogin()
     {
         $userId = cmf_get_current_user_id();
-        if (empty($userId)) {
-            //未登录直接跳转到首页
-            //$this->redirect(url('portal/index/index'));
-            $this->redirect(url('user/login/login'));
-            
+        $login=url('user/login/login');
+        if (empty($userId)) { 
+            $this->redirect($login); 
+        }else{
+            $user=Db::name('user')->where('id',$userId)->find();
+            if($user['user_pass']!=session('user.user_pass')){
+                session('user',null);
+                $this->error('密码已修改，请重新登录',$login);
+            }else{
+                session('user',$user);
+            }
         }
     }
 

@@ -69,7 +69,7 @@
                 $('input[name="identity_num"]').focus();
                 return false;
 
-            }else if($.trim(bank_deposit).length <= 10 ){
+            }else if($.trim(bank_deposit).length <= 4 ){
              
                 $('.error-tip').html('请输入银行卡详细信息');
                 $('input[name="bank_deposit"]').focus();
@@ -87,12 +87,11 @@
                 success: function(data){ 
                 	$('.error-tip').text(data.msg);
                 	if(data.url!=''){
-                		location.href=data.url; 
+                		 location.href=data.url;  
                 	} 
                 },
                 error: function(xhr, type){
-                	$('.error-tip').text('服务器连接失败'); 
-                	 
+                	$('.error-tip').text('服务器连接失败');  
                 }
             });
    		 	return false;

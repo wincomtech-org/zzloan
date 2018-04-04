@@ -15,8 +15,7 @@
 				<label class="col-sm-2 control-label">id</label>
 				<div class="col-md-6 col-sm-10">
 					<input type="text" class="form-control" name="id" value="{$info.id}"
-						readonly /> 
-						 
+						readonly />  
 				</div>
 			</div>
 			<div class="form-group fleft">
@@ -98,6 +97,62 @@
 			</div>
 			<div style="clear: both"></div>
 			<div class="form-group fleft">
+				<label class="col-sm-2 control-label">运营商密码</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control"  value="{$info.more.mobile_psw|default=''}" readonly /> 
+				</div>
+			</div>
+			 <div class="form-group fleft">
+				<label class="col-sm-2 control-label">运营商认证</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="radio" name="is_record" value="0" <eq name="info.is_record" value="0">checked</eq>/>未认证
+					<input type="radio" name="is_record" value="1" <eq name="info.is_record" value="1">checked</eq>/>已认证
+					 
+				</div>
+			</div>
+			<div class="form-group fleft">
+				<label class="col-sm-2 control-label">上传运营商评估文件</label>
+				<div class="col-md-6 col-sm-10">
+					<input id="file-1" type="hidden" name="mobile_file_url" value="{$info.more.mobile_file_url}" >
+					<input  id="file-1-name" type="text" name="mobile_file_name" value="{$info.more.mobile_file_name}">
+					<p>
+						<a id="file-1-preview" href="{:cmf_get_image_url($info.more.mobile_file_url)}" target="_blank">查看下载</a>&nbsp;&nbsp;&nbsp;
+						<a href="javascript:uploadOne('文件上传','#file-1','file');">上传</a>
+					</p>
+					 
+				</div>
+			 
+			</div>
+			<div style="clear: both"></div>
+			<div class="form-group fleft">
+				<label class="col-sm-2 control-label">学信网账号</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control"  value="{$info.more.xuexin|default=''}" readonly /> 
+				</div>
+			</div>
+			<div class="form-group fleft">
+				<label class="col-sm-2 control-label">学信网密码</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control"  value="{$info.more.xuexin_psw|default=''}" readonly /> 
+				</div>
+			</div>
+			 <div class="form-group fleft">
+				<label class="col-sm-2 control-label">学信网认证</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="radio" name="is_xuexin" value="0" <eq name="info.is_xuexin" value="0">checked</eq>/>未认证
+					<input type="radio" name="is_xuexin" value="1" <eq name="info.is_xuexin" value="1">checked</eq>/>已认证
+					
+				</div>
+			</div>
+			 
+			<div style="clear: both"></div>
+			<div class="form-group fleft">
+				<label class="col-sm-2 control-label">注册时间</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control"  value="{$info.create_time|date='Y-m-d H:i',###}" readonly /> 
+				</div>
+			</div>
+			<div class="form-group fleft">
 				<label class="col-sm-2 control-label">注册时间</label>
 				<div class="col-md-6 col-sm-10">
 					<input type="text" class="form-control"  value="{$info.create_time|date='Y-m-d H:i',###}" readonly /> 
@@ -133,7 +188,7 @@
 			 
 			<div style="clear: both"></div>
 			 <div class="form-group fleft">
-				<label class="col-sm-2 control-label">实名认证</label>
+				<label class="col-sm-2 control-label">资质认证</label>
 				<div class="col-md-6 col-sm-10">
 					<input type="radio" name="is_name" value="0" <eq name="info.is_name" value="0">checked</eq>/>未认证
 					<input type="radio" name="is_name" value="1" <eq name="info.is_name" value="1">checked</eq>/>已认证
@@ -157,6 +212,7 @@
 			 <div class="form-group">
 				<div class="col-sm-offset-2 col-sm-10">
 				 <p>请谨慎操作，额度为整数</p>
+				 <p>运营商评估文件可上传为pdf,doc,docx,xls,xlsx,ppt,pptx,zip,rar,html,jpg,jpeg,png,gif,bmp4</p>
 				</div>
 			</div>
 		</form>

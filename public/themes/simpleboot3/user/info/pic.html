@@ -35,7 +35,7 @@
                         </div>
                     </li>
                 </ul>
-                <div class='  photos-li  big_camera'>
+                <div class='photos-li  big_camera'>
                     <p class='gray'>拍摄本人与身份证合影</p>
                     <div class="photos_div backg-white border-radius-10">
                         <label class="input_div" for=''></label>
@@ -58,7 +58,12 @@
       ScrollImgLeft();
 
       var click=1;
+      var is_name="{$Think.session.user.is_name}";
       $('.camera').change(function() {
+    	  if(is_name=='1'){
+    		  $('.error-tip').text('已实名认证，不能修改身份照片');
+    		  return false;
+    	  }
             var file = this.files[0];
             var size=parseInt("{$Think.config.avatar_size}");
             if(file.size>size){
@@ -70,33 +75,45 @@
 
         });
        
-      
+      function CheckImgExists(imgurl) {  
+    	    var ImgObj = new Image(); //判断图片是否存在  
+    	    ImgObj.src = imgurl;  
+    	    //没有图片，则返回-1  
+    	    if (ImgObj.fileSize > 0 || (ImgObj.width > 0 && ImgObj.height > 0)) {  
+    	        return true;  
+    	    } else {  
+    	        return false;
+    	    }  
+    	} 
         // 身份证
        function formIdentity(form){
+    	   if(is_name=='1'){
+     		  $('.error-tip').text('已实名认证，不能修改身份照片');
+     		  return false;
+     	  }
     	   if(click==0){
-    			click=1;
-              
+    			click=1; 
     		}else{
     			return false;
     		}
-            var    camera1=$('input[name="camera1"]').val();
-            var    camera2=$('input[name="camera2"]').val();
-            var    camera3=$('input[name="camera3"]').val();
-             if(camera1==''){
-                $('.error-tip').html('请上传身份证正面照');
-                click=0;
-                return false;
-            }else if(camera2==''){
-                $('.error-tip').html('请上传身份证反面照');
-                click=0;
-                return false;
-            }else if(camera3==''){
-                $('.error-tip').html('请上传手持身份证照片');
-                click=0;
-                return false;
-            } 
-			$('.error-tip').text('正在上传');
-           
+    	   var camera1=CheckImgExists($('#camera1').siblings('img').attr('src'));
+    	   var camera2=CheckImgExists($('#camera2').siblings('img').attr('src'));
+    	   var camera3=CheckImgExists($('#camera3').siblings('img').attr('src'));
+    	   if(camera1==false){
+               $('.error-tip').html('请上传身份证正面照');
+               click=0;
+               return false;
+           }else if(camera2==false){
+               $('.error-tip').html('请上传身份证反面照');
+               click=0;
+               return false;
+           }else if(camera3==false){
+               $('.error-tip').html('请上传手持身份证照片');
+               click=0;
+               return false;
+           } 
+    	   $('.error-tip').text('正在上传');
+    	   
        }
     </script>
 </body>

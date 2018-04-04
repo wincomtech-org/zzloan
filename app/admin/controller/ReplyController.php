@@ -90,7 +90,7 @@ class ReplyController extends AdminBaseController
         if(empty($info1)){
             $info1=Db::name('paper_old')->where('oid',$info['oid'])->find(); 
             if(empty($info1)){
-                $this->error('此还款申请关联的信息错误');
+                $this->error('此还款申请关联的信息不存在');
             }
             $info1['status']=6;
         }

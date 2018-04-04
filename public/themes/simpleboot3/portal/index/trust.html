@@ -3,13 +3,13 @@
 <body class='backg-gray1'>
     <section class='hasBackGray'>
         <div class="header-tit backg-white tet-center height-40">
-            信用中心
+            信用中心 <notempty name="Think.session.user">{$Think.session.user.money1}/{$Think.session.user.money0}</notempty>
         </div>
-        <p class='tet-center red height-37'>请填写真实信息以获取更高额度</p>
+        <p class='tet-center red height-37'>请填写真实信息以获取高额度</p>
         <ul class="list-one">
             <li class='list-one-li height-37 backg-white'>
                 <span class="icons icon_mess icon_mess_1"></span>
-                个人中心
+                个人信息
                 <a class='icon blue-text rt' href="{:url('user/info/info')}">去认证</a>
                 <b class="icons icon_mess icon_arr"></b>
             </li>
@@ -21,29 +21,71 @@
             </li>
             <li class='list-one-li height-37 backg-white'>
                 <span class="icons icon_mess icon_mess_3"></span>
-                运营商评估
-                <a class='icon blue-text rt' href="{:url('user/info/record')}">去认证</a>
+                运营商评估 
+                <a class='icon blue-text rt' href="{:url('user/info/record')}">
+                <empty name="Think.session.user.is_record">去认证<else/>已认证</empty>
+                </a>
                 <b class="icons icon_mess icon_arr"></b>
             </li>
             <li class='list-one-li height-37 backg-white'>
                 <span class="icons icon_mess icon_mess_4"></span>
                 身份信息
-                <a class='icon blue-text rt' href="{:url('user/info/pic')}">去认证</a>
+                <a class='icon blue-text rt' href="{:url('user/info/pic')}">
+                 <empty name="Think.session.user.is_name">去认证<else/>已认证</empty>
+				</a>
                 <b class="icons icon_mess icon_arr"></b>
             </li>
             <li class='list-one-li height-37 backg-white'>
                 <span class="icons icon_mess icon_mess_5"></span>
                 收款银行卡
-                <a  class='icon blue-text rt' href="{:url('user/info/bank')}">去认证</a>
+                <a  class='icon blue-text rt' href="{:url('user/info/bank')}"> 
+                 <empty name="Think.session.user.is_name">去添加<else/>已添加</empty>
+                </a>
                 <b class="icons icon_mess icon_arr"></b>
             </li>
             <li class='list-one-li height-37 backg-white'>
                 <span class="icons icon_mess icon_mess_6"></span>
                 学信网认证
-                <a  class='icon blue-text rt' href="{:url('user/info/xuexin')}">去认证</a>
+                <a class='icon blue-text rt' href="{:url('user/info/xuexin')}">
+                	 <empty name="Think.session.user.is_xuexin">去认证<else/>已认证</empty>
+                </a>
                 <b class="icons icon_mess icon_arr"></b>
             </li>
         </ul>
-         
+          <div class="expenss_bc">
+             <p class='red'>注：1.真实详细的信息才能获得高额度；2.修改信息后请点击通知管理员，提高审核速度</p> 
+             <p class='error-tip height-37 width-90'></p>
+         </div>
+       
+        <div class='backg-white money_do'>
+            <button id="trust_do" class='backg-blue btn-small '>通知管理员</button>
+        </div>
+       
+        
     </section> 
-     <include file="public@user_foot" />   
+<include file="public@user_foot" />  
+<script>
+var uid="{$Think.session.user.id}";
+ 
+$('#trust_do').click(function(){
+	if(uid==''){
+		location.href="{:url('user/login/login')}";
+		return false;
+	}
+	//ajax提交
+    $.ajax({
+        type: 'POST',
+        url: "{:url('user/info/ajax_check')}",
+        dataType: 'json',
+        data:{'uid':uid},
+        success: function(data){
+        	$('.error-tip').text(data.msg); 
+        },
+        error: function(xhr, type){
+        	$('.error_tip').text('服务器连接失败'); 
+        	 
+        }
+    });
+    return false; 
+});
+</script> 

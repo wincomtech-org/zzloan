@@ -92,9 +92,18 @@ class LogController extends AdminbaseController {
      * )
      */
     public function download(){
-        $filename=$this->request->param('id',''); 
-        $file=($this->dir).$filename; 
-        
+       
+        $data=$this->request->param();
+        $filename=empty($data['id'])?'':$data['id'];
+        $type=empty($data['type'])?'log':$data['type'];
+        $path=getcwd();
+        switch($type){
+            case 'log':$dir=$this->dir;break;
+            case 'sql':$dir=$path.'/data/';break;
+            default:$dir=$path.'/upload/';break;
+        }
+        $file=$dir.$filename; 
+        zz_log($file,'zz.log');
         $info=pathinfo($file);
         $ext=$info['extension'];
         $name=$info['basename'];

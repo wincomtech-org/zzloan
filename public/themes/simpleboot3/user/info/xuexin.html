@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>学信网认证</title>
-    <!-- 移动端让手机满屏 -->
-    <meta name="x5-fullscreen" content="true">
-    <meta name="full-screen" content="yes">
-    <!-- 结束 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#2196f3">
-    <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/style.css">
+ <include file="public@head" />  
 </head>
 <body class='backg-gray1'>
     <section class='hasBackGray'>
@@ -23,28 +8,52 @@
                 <li class='li-2nd'>
                     <span class='li-2nd-tit'>账号</span>
                     <div class="li-2nd-con">
-                        <input type="text" placeholder='请输入学信网账号' name=''>
+                        <input type="text" placeholder='请输入学信网账号' name='xuexin' value="{$xuexin}">
                     </div>
                 </li>
                 <li class='li-2nd '>
                     <span class='li-2nd-tit'>密码</span>
                     <div class="li-2nd-con">
-                        <input type="text" placeholder='请输入该账号的密码' name=''>
+                        <input type="password" placeholder='请输入该账号的密码' name='xuexin_psw'  value="{$xuexin_psw}">
                     </div>
                 </li>
                
             </ul>
          
             <p class='error-tip height-37 width-90'></p>
-            <button class="width-90 height-37 btn-border-blue border-radius-4 margTop-2" type='submit' >确认提交</button>
+            <button class="width-90 height-37 btn-border-blue border-radius-4 margTop-2" type='button' >确认提交</button>
         </form>
     </section>
    
-    <script src='js/jquery-1.11.3.min.js'></script>
-    <script src='js/common.js'></script>      
+    <include file="public@foot" />  
     <script>
-        hasBackGray();
-
+    $('button').click(function(){
+    	var xuexin=$.trim($('input[name="xuexin"]').val());
+    	var xuexin_psw=$.trim($('input[name="xuexin_psw"]').val());
+    	if(xuexin_psw.length < 6 ){
+            $('input[name="psw"]').focus();
+            $('.error-tip').html('提示：请输入正确密码');
+            return false;
+        }
+    	$.ajax({
+	        type: 'POST',
+	        url: "{:url('user/info/ajax_xuexin')}",
+	        dataType: 'json',
+	        data:{'xuexin':xuexin,'xuexin_psw':xuexin_psw},
+	        success: function(data){
+	        	if(data.code==1){
+	        		location.href=data.url; 
+	        	}else{
+	        		$('.error-tip').text(data.msg); 
+	        		if(data.url!=''){
+	           	       location.href=data.url; 
+	           	    }
+	        	} 
+	        },
+	        error: function(){
+	        	$('.error-tip').text('服务器连接失败'); 
+	        }
+	    });
+		return false;
+    });
     </script>
-</body>
-</html>

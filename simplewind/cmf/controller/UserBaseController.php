@@ -17,7 +17,7 @@ class UserBaseController extends HomeBaseController
     {
         parent::_initialize();
         $this->checkUserLogin();
-        
+      
     }
 
 

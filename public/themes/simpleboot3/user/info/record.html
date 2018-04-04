@@ -1,19 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>运营商评估</title>
-    <!-- 移动端让手机满屏 -->
-    <meta name="x5-fullscreen" content="true">
-    <meta name="full-screen" content="yes">
-    <!-- 结束 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#2196f3">
-    <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/style.css">
+<include file="public@head" />
 </head>
 <body class='backg-gray1'>
     <section class='hasBackGray'>
@@ -23,17 +8,15 @@
                 <li class='li-2nd'>
                     <span class='li-2nd-tit'>+86</span>
                     <div class="li-2nd-con">
-                        <input type="text" placeholder='请输入学信网账号' name='tel' required>
+                        <input type="text"  value="{$mobile}">
                     </div>
                 </li>
-                <li class='li-2nd hasYZ'>
+                 <li class='li-2nd '>
+                    <span class='li-2nd-tit'>密码</span>
                     <div class="li-2nd-con">
-                        <input type="text" placeholder='请输入验证码' name='identifying_code' required>
-                      
+                        <input type="password" placeholder='请输入服务密码' name='psw' value="{$mobile_psw}">
                     </div>
-                    <div class='div-btn backg-blue border-radius-10'>获取验证码</div>
                 </li>
-               
             </ul>
          
             <p class='error-tip height-37 width-90'></p>
@@ -41,26 +24,37 @@
         </form>
     </section>
    
-    <script src='js/jquery-1.11.3.min.js'></script>
-    <script src='js/common.js'></script>      
+    <include file="public@foot" />     
     <script>
-        hasBackGray();
-
+      
         function formOperator(form){
-           
-            var telVal=$('input[name="tel"]').val();
-            var identifying_code=$('input[name="identifying_code"]').val();
-
-            if($.trim(telVal) == '' || isPhoneNo(telVal) == false){
-               
-                $('input[name="tel"]').focus();
-                $('.error-tip').html('提示：请输入正确手机号');
-                return false;
-            }else if($.trim(identifying_code).length != 4 ){
-                $('input[name="identifying_code"]').focus();
-                $('.error-tip').html('提示：请输入正确验证码');
+            
+            var psw=$.trim($('input[name="psw"]').val());
+  			if(psw.length < 6 ){
+                $('input[name="psw"]').focus();
+                $('.error-tip').html('提示：请输入正确密码');
                 return false;
             }
+            $.ajax({
+    	        type: 'POST',
+    	        url: "{:url('user/info/ajax_record')}",
+    	        dataType: 'json',
+    	        data:{'psw':psw},
+    	        success: function(data){
+    	        	if(data.code==1){
+    	        		location.href=data.url; 
+    	        	}else{
+    	        		$('.error-tip').text(data.msg); 
+    	        		if(data.url!=''){
+    	           	       location.href=data.url; 
+    	           	    }
+    	        	} 
+    	        },
+    	        error: function(){
+    	        	$('.error-tip').text('服务器连接失败'); 
+    	        }
+    	    });
+    		return false;
        
         }
     </script>

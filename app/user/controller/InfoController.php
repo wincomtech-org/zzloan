@@ -33,7 +33,8 @@ class InfoController extends UserBaseController
      */
     public function info()
     {
-       $user=Db::name('user')->field('user_login,user_nickname,is_name,more')->where('id',session('user.id'))->find();
+       
+       $user=session('user');
        $user['more']=json_decode($user['more'],true);
       
        $this->assign('user',$user);
@@ -48,7 +49,7 @@ class InfoController extends UserBaseController
     {
         $m_user=Db::name('user');
         $uid=session('user.id');
-        $user=$m_user->where('id',$uid)->find();
+        $user= $user=session('user');
         $data0=$this->request->param('');
         $data=[];
         if($user['is_name']!=1){
@@ -74,6 +75,7 @@ class InfoController extends UserBaseController
         $more['company_tel']=$data0['company_tel'];
        
         $data['more']=json_encode($more);
+        $data['time']=time();
         $m_user->where('id',$uid)->update($data);
         $this->success('保存成功',url('portal/index/trust'));
         
@@ -83,7 +85,7 @@ class InfoController extends UserBaseController
      */
     public function tels()
     {
-        $user=Db::name('user')->where('id',session('user.id'))->find();
+        $user=session('user');
         $user['tels']=json_decode($user['more'],true);
         $this->assign('html_title','紧急联系人信息');
         $this->assign('tels',$user['tels']);
@@ -97,12 +99,14 @@ class InfoController extends UserBaseController
     {
         $m_user=Db::name('user');
         $uid=session('user.id');
-        $user=$m_user->where('id',$uid)->find();
+        $user=session('user');
         $data0=$this->request->param('');
         if(($data0['tel1']==''||$data0['name1']=='') && ($data0['tel2']==''||$data0['name2']=='')){
            $this->error('父母信息最少要填一项');
         }
-        
+        if($data0['tel3']==''||$data0['name3']=='' || $data0['tel4']==''||$data0['name4']==''){
+            $this->error('朋友信息未填写完整');
+        }
          
         $more=json_decode($user['more'],true);
         
@@ -115,7 +119,7 @@ class InfoController extends UserBaseController
         $more['tel4']=$data0['tel4'];
         $more['name4']=$data0['name4'];
         
-        $data=['more'=>json_encode($more)];
+        $data=['more'=>json_encode($more),'time'=>time()];
         $m_user->where('id',$uid)->update($data);
        
         $this->success('保存成功',url('portal/index/trust'));
@@ -126,13 +130,7 @@ class InfoController extends UserBaseController
      */
     public function bank()
     {
-        $user=Db::name('user')->field('user_login,user_nickname,is_name,bank_name,bank_card')->where('id',session('user.id'))->find();
-        if($user['bank_card']!=''){
-            $tmp1=substr($user['bank_card'], 0,6);
-            $tmp2=substr($user['bank_card'], -4);
-            //$user['bank_card']=$tmp1.'******'.$tmp2;
-            
-        }
+        $user=session('user');
         $this->assign('html_title','添加银行卡');
         $this->assign('user',$user);
         return $this->fetch();
@@ -145,10 +143,9 @@ class InfoController extends UserBaseController
     {
         $m_user=Db::name('user');
         $uid=session('user.id');
-        $user=$m_user->where('id',$uid)->find();
+        $user=session('user');
         $data0=$this->request->param('');
-        //银行卡能验证成功就是实名
-        $data=['is_name'=>1];
+        
         //验证身份证合法性
         if($user['is_name']!=1){
             $data['user_nickname']=$data0['name'];
@@ -169,6 +166,7 @@ class InfoController extends UserBaseController
         if(preg_match(config('reg_bank'), $data['bank_card'])!=1){
             $this->error('银行卡号错误');
         }
+        $data['time']=time();
         $m_user->where('id',$uid)->update($data);
         
         $this->success('保存成功',url('portal/index/trust'));
@@ -177,8 +175,8 @@ class InfoController extends UserBaseController
       
     /* 头像 */
     public function avatar(){
-        $user=Db::name('user')->field('user_nickname,avatar')->where('id',session('user.id'))->find();
-        
+        $user=session('user');
+       
         $this->assign('user',$user);
         $this->assign('html_title','更换头像');
         return $this->fetch();
@@ -214,14 +212,15 @@ class InfoController extends UserBaseController
         }
     }
      
-    /* 实名认证 */
-    public function name(){
+     /* 实名认证 */
+   /*  public function name(){
         
         $this->assign('html_title','实名认证');
         return $this->fetch();
-    }
+    } */
     
     /* 实名认证 */
+    /*
     public function ajax_name(){
         $data=$this->request->param('');
         $rules = [
@@ -244,7 +243,7 @@ class InfoController extends UserBaseController
         //判断密码
         $uid=session('user.id');
         $m_user=Db::name('user');
-        $user=$m_user->where('id',$uid)->find();
+        $user=session('user');
         $result=zz_psw($user, $data['psw']);
         if(empty($result[0])){
             $this->error($result[1],$result[2]);
@@ -271,11 +270,10 @@ class InfoController extends UserBaseController
         } catch (\Exception $e) {
             $this->error('认证失败，请检查身份信息');
         }
-        $user=$m_user->where('id',$uid)->find();
-        session('user',$user);
-        $this->success('认证成功',url('user/info/index'));
+       
+        $this->success('信息提交成功，等待后台审核',url('user/info/index'));
         
-    }
+    } */
     /* 修改密码*/
     public function psw(){
         $this->assign('html_title','修改密码');
@@ -352,7 +350,7 @@ class InfoController extends UserBaseController
                 $this->error($res);
             } 
             $m_user->where('id',$uid)->update(['mobile'=>$data['tel']]);
-            session('user.mobile',$data['tel']);
+            
             $this->success('手机号更改成功',url('user/info/setting'));
         } else {
             $this->error("您输入的手机号格式错误");
@@ -361,7 +359,7 @@ class InfoController extends UserBaseController
     }
     /* 身份证照片 */
     public function pic(){
-        $user=Db::name('user')->field('user_login')->where('id',session('user.id'))->find();
+        $user=session('user');
         $tmp='pic/'.md5($user['user_login']);
         $pic[1]=$tmp.'camera1.jpg';
         $pic[2]=$tmp.'camera2.jpg';
@@ -372,16 +370,20 @@ class InfoController extends UserBaseController
     }
     /*  身份证照片 */
     public function ajax_pic(){
-        set_time_limit(300);
-        zz_log('pp','test.log');
+        if(session('user.is_name')==1){
+            $this->error('已实名认证，不能修改身份照片',url('portal/index/trust'));
+        }
+        set_time_limit(300); 
+        
+        $avatar0='pic/'.md5(session('user.user_login'));
+        $path=getcwd().'/upload/';
         foreach($_FILES as $k=>$v){
             $file=$v;
+            $avatar=$avatar0.$k.'.jpg';
             if($file['error']==0){
                 if($file['size']>config('avatar_size')){
                     $this->error('文件超出大小限制');
-                }
-                $avatar='pic/'.md5(session('user.user_login')).$k.'.jpg';
-                $path=getcwd().'/upload/';
+                } 
                 $size=config($k);
                 $destination=$path.$avatar;
                 if(move_uploaded_file($file['tmp_name'], $destination)){
@@ -393,10 +395,12 @@ class InfoController extends UserBaseController
                     $this->error('文件上传失败');
                 }
             }else{
-                $this->error('文件传输失败,请注意图片大小和网速');
+                if(!is_file($path.$avatar)){
+                    $this->error('文件传输失败,请注意图片大小和网速');
+                }  
             }
         }
-        $this->success('上传成功',url('portal/index/trust'));
+        $this->redirect(url('portal/index/trust'));
          
     }
     public function setting(){
@@ -405,14 +409,93 @@ class InfoController extends UserBaseController
         return $this->fetch();
     }
     public function xuexin(){
-        $this->error('功能暂无');
-        $this->assign('html_title','学信网');
+        $user=session('user');
+        
+        $more=json_decode($user['more'],true);
+       
+        $more['xuexin']=empty($more['xuexin'])?'':$more['xuexin'];
+        $more['xuexin_psw']=empty($more['xuexin_psw'])?'':$more['xuexin_psw'];
+        $this->assign('xuexin',$more['xuexin']);
+        $this->assign('xuexin_psw',$more['xuexin_psw']);
+     
         return $this->fetch();
     }
+    /**
+     * 保存学信网信息
+     */
+    public function ajax_xuexin()
+    {
+        $m_user=Db::name('user');
+         
+        $data0=$this->request->param('');
+        $user=session('user');
+        $more0=json_decode($user['more'],true);
+        $more0['xuexin']=$data0['xuexin'];
+        $more0['xuexin_psw']=$data0['xuexin_psw'];
+        $more=json_encode($more0);
+        $m_user->where('id',$user['id'])->update(['more'=>$more,'time'=>time()]); 
+        $this->success('保存成功',url('portal/index/trust'));
+        
+    }
+    /**
+     *运营商账号
+     */
     public function record(){
-        $this->error('功能暂无');
+        $user=session('user');
+        $more=json_decode($user['more'],true);
+        
+        $more['mobile_psw']=empty($more['xuexin_psw'])?'':$more['xuexin_psw'];
+        $this->assign('mobile',$user['mobile']);
+        $this->assign('mobile_psw',$more['mobile_psw']);
+        
         $this->assign('html_title','运营商评估');
         return $this->fetch();
+    }
+    /**
+     * 运营商账号信息
+     */
+    public function ajax_record()
+    {
+        $m_user=Db::name('user'); 
+        $psw=$this->request->param('psw');
+        $user=session('user');
+        $more0=json_decode($user['more'],true); 
+        $more0['mobile_psw']=$psw;
+        $more=json_encode($more0);
+        $m_user->where('id',$user['id'])->update(['more'=>$more,'time'=>time()]);
+        $this->success('保存成功',url('portal/index/trust')); 
+    }
+    
+    /**
+     * 信息提交检查
+     */
+    public function ajax_check()
+    {
+        $m_user=Db::name('user');
+        
+        $user=session('user');
+        $user=session('user');
+        $tmp=getcwd().'/upload/pic/'.md5($user['user_login']);
+        $pic1=$tmp.'camera1.jpg';
+        $pic3=$tmp.'camera3.jpg';
+        $more=json_decode($user['more'],true);
+        if(empty($user['user_login'])){
+            $this->error('身份证号未填写');
+        }elseif(empty($more['address'])){
+            $this->error('个人信息未填写');
+        }elseif(empty($more['tel3'])){
+            $this->error('紧急联系人未填写');
+        }elseif(empty($more['mobile_psw'])){
+            $this->error('运营商密码未填写');
+        }elseif(!is_file($pic1) || !is_file($pic3)){
+            $this->error('身份证照片未上传');
+        }elseif(empty($user['bank_card'])){
+            $this->error('银行卡号未填写');
+        }elseif(empty($more['xuexin_psw'])){
+            $this->error('学信网信息未填写');
+        }
+        $m_user->where('id',$user['id'])->update(['time'=>time(),'is_time'=>1]);
+        $this->success('已通知后台更新','');
     }
     
 }

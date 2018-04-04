@@ -25,13 +25,13 @@ class PaperController extends UserBaseController
     public function ajax_send(){
         $user0=Db::name('user')->where('id',session('user.id'))->find();
         if(empty($user0['is_name'])){
-            $this->error('没有实名认证，请先去认证，添加银行卡');
+            $this->error('请填写资料完成实名认证',url('portal/index/trust'));
         }
         $data0=$this->request->param();
         //已用额度+借款金额>总额度
         $user0['money1']=bcadd($user0['money1'],$data0['money'],2);
         if( $user0['money1']>$user0['money0']){
-            $this->error('额度不足，不能借款');
+            $this->error('额度不足，不能借款,请提交资料提高额度',url('portal/index/trust'));
         }
        
         $time=time();
