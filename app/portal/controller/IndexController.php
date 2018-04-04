@@ -26,12 +26,12 @@ class IndexController extends HomeBaseController
             }
             session('login_http_referer',$redirect);
         }
-        
+        session('wx.openid','11');
         //测试
         //$openid='oyHSG1Rq1YeiZ1o8OoqFyt4ri4yw';
         //检测网页授权
         $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
-        if( preg_match('/micromessenger/', $ua) && empty(session('user'))){
+        if( preg_match('/micromessenger/', $ua) && empty(session('user')) && 0){
             // 公众号的id和secret
             $appid = config('wx_appid');
             $appsecret = config('wx_appsecret');

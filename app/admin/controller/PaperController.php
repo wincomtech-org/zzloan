@@ -180,5 +180,66 @@ class PaperController extends AdminBaseController
         $this->success('保存成功！',url('index'));
          
     }
+    /**
+     * 一键催款
+     * @adminMenu(
+     *     'name'   => '一键催款',
+     *     'parent' => 'index',
+     *     'display'=> false,
+     *     'hasView'=> false,
+     *     'order'  => 10,
+     *     'icon'   => '',
+     *     'remark' => '一键催款',
+     *     'param'  => ''
+     * )
+     */
+    public function msg(){
+        $tmp=zz_check_time();
+        if($tmp[0]===1){
+            $this->error($tmp[1]);
+        }
+        
+        $date0=config('msg_date');
+        $date=date('Y-m-d');
+        if($date==$date0){
+            $this->error('每天只能催款一次');
+        }else{
+            cmf_set_dynamic_config(['msg_date'=>$date]);
+        }
+        $where=[ 
+            'status'=>['in',[3,5]],
+        ];
+        $list=Db::name('paper')->where($where)->column('');
+        if(empty($list)){
+            $this->error('没有到期和逾期的借款用户');
+        }
+        $ok=0;
+        $fail='';
+        $url0=url('user/paper/lists','',true,true);
+        $type='msg_send';
+        $m_user=Db::name('user');
+        foreach($list as $k=>$v){
+            $data=[
+                '你的借款到期了', 
+                $v['money'],
+                date('Y-m-d',$v['start_time']),
+                date('Y-m-d',$v['end_time']),
+                '请尽快还款，点击进入'
+            ];
+            //获取openid
+            $borrower=$m_user->where('id',$v['borrower_id'])->find();
+            $res=zz_wxmsg($borrower['openid'], $url0, $data, $type);
+            if($res['errcode']==0){
+                $ok++;
+            }else{
+                $fail.=',用户'.$v['borrower_name'];
+                zz_log('用户'.$v['borrower_name'].'催款信息发送失败'.$res['errcode'].'-'.$res['errmsg'],'wx.log');
+            }
+        }
+        if($fail!=''){
+            $fail.='催款信息发送失败';
+        }
+        $this->error('发送催款通知'.$ok.'条'.$fail);
+    }
     
 }
