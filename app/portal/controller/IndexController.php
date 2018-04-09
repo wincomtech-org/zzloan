@@ -207,7 +207,7 @@ class IndexController extends HomeBaseController
                 if($data->Event && $data->Event == 'subscribe' && !empty($data->EventKey)) {
                     $FromUserName = $data->FromUserName; //openid
                     $EventKey = $data->EventKey; //带前缀的Key
-                    zz_log('$FromUserName'.$FromUserName.'$EventKey'.$EventKey,'wx.log');
+                    
                     $EventKey = ltrim($EventKey, 'qrscene_'); //去掉前缀就是我们传递给微信的Key
                     $m=Db::name('user_wx');
                     $data=['openid'=>$FromUserName];
