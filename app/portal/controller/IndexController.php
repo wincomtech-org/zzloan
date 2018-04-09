@@ -204,7 +204,7 @@ class IndexController extends HomeBaseController
                 $data = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
                 
                 //当事件为关注公众号事件时执行,已关注为scan
-                if($data->Event && $data->Event == 'subscribe' && $data->EventKey) {
+                if($data->Event && $data->Event == 'subscribe' && !empty($data->EventKey)) {
                     $FromUserName = $data->FromUserName; //openid
                     $EventKey = $data->EventKey; //带前缀的Key
                     zz_log('$FromUserName'.$FromUserName.'$EventKey'.$EventKey,'wx.log');
