@@ -114,7 +114,7 @@
 				<label class="col-sm-2 control-label">上传运营商评估文件</label>
 				<div class="col-md-6 col-sm-10">
 					<input id="file-1" type="hidden" name="mobile_file_url" value="{$info.more.mobile_file_url}" >
-					<input  id="file-1-name" type="text" name="mobile_file_name" value="{$info.more.mobile_file_name}">
+					<input  id="file-1-name" type="text" name="mobile_file_name" value="{$info.more.mobile_file_name}" readonly>
 					<p>
 						<a id="file-1-preview" href="{:cmf_get_image_url($info.more.mobile_file_url)}" target="_blank">查看下载</a>&nbsp;&nbsp;&nbsp;
 						<a href="javascript:uploadOne('文件上传','#file-1','file');">上传</a>

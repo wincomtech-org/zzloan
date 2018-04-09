@@ -26,12 +26,12 @@ class IndexController extends HomeBaseController
             }
             session('login_http_referer',$redirect);
         }
-        session('wx.openid','11');
+      
         //测试
         //$openid='oyHSG1Rq1YeiZ1o8OoqFyt4ri4yw';
         //检测网页授权
         $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
-        if( preg_match('/micromessenger/', $ua) && empty(session('user')) && 0){
+        if( preg_match('/micromessenger/', $ua) && empty(session('user'))  ){
             // 公众号的id和secret
             $appid = config('wx_appid');
             $appsecret = config('wx_appsecret');
@@ -63,21 +63,23 @@ class IndexController extends HomeBaseController
                 
                 $user=Db::name('user')->where('openid',$res['openid'])->find();
                 if(empty($user)){
-                    //需要获取微信信息
+                    $this->redirect($redirect);
+                    //不获取微信信息
+                   /*  //需要获取微信信息
                     $access_token = config('access_token');
                     $openid = $res['openid'];
                     $get_user_info_url='https://api.weixin.qq.com/cgi-bin/user/info?access_token='.$access_token.'&openid='.$openid.'&lang=zh_CN';
                     //获取到用户信息
                     $userinfo =zz_curl($get_user_info_url);
                     if(empty($userinfo['openid'])){
-                        zz_log('user_info授权失败$$access_token'.$access_token);
+                        zz_log('user_info授权失败$$access_token'.$access_token,'wx.log');
                         session('wx',null); 
                         exit('微信授权信息获取失败，请退出重试');
                     }else{
                         session('wx',$userinfo);
                         session('redirect',null);
                         $this->redirect($redirect);
-                    }
+                    } */
                 }else{
                     session('user',$user);
                     $this->redirect($redirect);
@@ -163,6 +165,8 @@ class IndexController extends HomeBaseController
     
     public function checkSignature()
     {
+        //EncodingAESKey
+        //e1L2zMXsAFtCrMEAosvKpYMcQZgucyDg1yVmbRJO348
          
         $echoStr = $_GET["echostr"]; 
         // you must define TOKEN by yourself
@@ -188,6 +192,38 @@ class IndexController extends HomeBaseController
         }
         exit();
     }
-     
+    /* 微信通知 */
+    public function wx_notice()
+    { 
+        if( isset($_POST) ) {
+            
+            //如果5秒内不返回数据，微信会重试3次推送，造成我们脚本多次执行 
+            $postStr = file_get_contents('php://input'); //获取微信推送过来的XML数据
+            if($postStr) {
+                //解析XML
+                $data = simplexml_load_string($postStr, 'SimpleXMLElement', LIBXML_NOCDATA);
+                
+                //当事件为关注公众号事件时执行,已关注为scan
+                if($data->Event && $data->Event == 'subscribe') {
+                    $FromUserName = $data->FromUserName; //openid
+                    $EventKey = $data->EventKey; //带前缀的Key
+                    zz_log('$FromUserName'.$FromUserName.'$EventKey'.$EventKey,'wx.log');
+                    $EventKey = ltrim($EventKey, 'qrscene_'); //去掉前缀就是我们传递给微信的Key
+                    $m=Db::name('user_wx');
+                    $data=['openid'=>$FromUserName];
+                    $tmp=$m->where($data)->find();
+                    if(empty($tmp)){
+                        $data['aid']=$EventKey;
+                        $m->insert($data);
+                    } 
+                }
+            }
+        }
+        
+        exit('success');
+    }
+    //自定义菜单接口
+    //https://api.weixin.qq.com/cgi-bin/menu/create?access_token=
+    //8_AlUeA9NgF5cvBiDww4sqZ0OVgAn4QVgURQTHsa9EEc5eLbjlGprQIQD9fxOkzresJWK4rY9IjAHqe1unn50gz7HcSpMOgSObxKmQy2CiG7hta8pFtExbhbmPEC-F5ME-I8U-7hpUW4MujJqrMIIjACAYUU 
     
 }

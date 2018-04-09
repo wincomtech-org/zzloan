@@ -9,7 +9,15 @@
 		</ul>
 		<form class="well form-inline margin-top-20" method="post"
 			action="{:url('search')}">
-			 
+			  推荐人：
+    		<select class="form-control" name="aid" style="width: 140px;">
+				<option value='0'>全部</option> 
+				 <foreach name="admins" item="vo" k="key">
+				<option value="{$key}" <if condition="$key eq $data.aid">selected</if>> 
+				{$vo}
+				</option>
+				</foreach>
+			</select> &nbsp;&nbsp; 
 			借款人身份证号: 
 			<input type="text" name="borrower_idcard" value="{$data.borrower_idcard}"/>
 			  &nbsp;&nbsp;

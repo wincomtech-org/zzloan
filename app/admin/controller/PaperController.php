@@ -174,9 +174,23 @@ class PaperController extends AdminBaseController
         $m->where('id',$data['id'])->update($data);
         Db::name('action')->insert($data_action);
         Db::commit();
-        
-       
-        
+        //发送wx通知
+        if($data['status']==4){
+            $url0=url('user/paper/lists','',true,true);
+            $type='msg_send';
+            $data=[
+                '你的借款申请审核通过了',
+                $info['money'],
+                date('Y-m-d',$data['start_time']),
+                date('Y-m-d',$data['end_time']),
+                '借款即将到账，请及时查验，点击进入'
+            ];
+            //获取openid 
+            $res=zz_wxmsg($user['openid'], $url0, $data, $type);
+            if($res['errcode']!=0){ 
+                zz_log('用户'.$info['borrower_name'].'催款信息发送失败'.$res['errcode'].'-'.$res['errmsg'],'wx.log');
+            }
+        } 
         $this->success('保存成功！',url('index'));
          
     }
@@ -201,11 +215,11 @@ class PaperController extends AdminBaseController
         
         $date0=config('msg_date');
         $date=date('Y-m-d');
-        if($date==$date0){
+       /*  if($date==$date0){
             $this->error('每天只能催款一次');
         }else{
             cmf_set_dynamic_config(['msg_date'=>$date]);
-        }
+        } */
         $where=[ 
             'status'=>['in',[3,5]],
         ];
@@ -216,7 +230,7 @@ class PaperController extends AdminBaseController
         $ok=0;
         $fail='';
         $url0=url('user/paper/lists','',true,true);
-        $type='msg_send';
+        $type='msg_back';
         $m_user=Db::name('user');
         foreach($list as $k=>$v){
             $data=[

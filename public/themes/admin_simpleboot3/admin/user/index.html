@@ -19,12 +19,13 @@
 				<tr>
 					<th width="50">ID</th>
 					<th>{:lang('USERNAME')}</th>
+					<th>昵称</th>
 					<th>{:lang('LAST_LOGIN_IP')}</th>
 					<th>{:lang('LAST_LOGIN_TIME')}</th>
 					<th>手机号</th>
 					<th>{:lang('EMAIL')}</th>
 					<th>{:lang('STATUS')}</th>
-					<th width="130">{:lang('ACTIONS')}</th>
+					<th width="150">{:lang('ACTIONS')}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -32,7 +33,8 @@
 				<foreach name="users" item="vo">
 				<tr>
 					<td>{$vo.id}</td>
-					<td><if condition="$vo['user_url']"><a href="{$vo.user_url}" target="_blank" title="{$vo.signature}">{$vo.user_login}</a><else />{$vo.user_login}</if></td>
+					<td>{$vo.user_login}</td>
+					<td>{$vo.user_nickname}</td>
 					<td>{$vo.last_login_ip}</td>
 					<td>
 						<if condition="$vo['last_login_time'] eq 0">
@@ -46,7 +48,10 @@
 					<td>{$user_statuses[$vo['user_status']]}</td>
 					<td>
 						<if condition="$vo['id'] eq 1 || $vo['id'] eq cmf_get_current_admin_id()">
-						<font color="#cccccc">{:lang('EDIT')}</font>  <font color="#cccccc">{:lang('DELETE')}</font>
+						<font color="#cccccc">{:lang('EDIT')}</font>  
+						&nbsp;&nbsp;&nbsp;
+						<font color="#cccccc">{:lang('DELETE')}</font>
+						&nbsp;&nbsp;&nbsp;
 							<if condition="$vo['user_status'] eq 1">
 								<font color="#cccccc">{:lang('BLOCK_USER')}</font>
 							<else />
@@ -54,7 +59,9 @@
 							</if>
 						<else />
 							<a href='{:url("user/edit",array("id"=>$vo["id"]))}'>{:lang('EDIT')}</a>
+							&nbsp;&nbsp;&nbsp;
 							<a class="js-ajax-delete" href="{:url('user/delete',array('id'=>$vo['id']))}">{:lang('DELETE')}</a>
+							&nbsp;&nbsp;&nbsp;
 							<if condition="$vo['user_status'] eq 1">
 								<a href="{:url('user/ban',array('id'=>$vo['id']))}" class="js-ajax-delete" data-msg="{:lang('BLOCK_USER_CONFIRM_MESSAGE')}">{:lang('BLOCK_USER')}</a>
 							<else />

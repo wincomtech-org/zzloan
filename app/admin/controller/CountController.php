@@ -163,6 +163,19 @@ class CountController extends AdminBaseController
       
         $data=$this->request->param();
         $where=[];
+        $where_user=['user_type'=>['eq',2]];
+        $m_user=Db::name('user');
+        //推荐管理员
+        if(empty($data['aid'])){
+            $data['aid']=0;
+        }else{
+            //先得到管理员对应的openid,然后得到borrower_id
+            $data['aid']=intval($data['aid']);
+            $openids=Db::name('user_wx')->where('aid',$data['aid'])->column('openid'); 
+            $where_user['openid'] = ['in',$openids]; 
+            $uids=$m_user->where($where_user)->column('id');
+            $where['borrower_id']=['in',$uids];
+        }
         if(empty($data['borrower_idcard'])){
             $data['borrower_idcard']='';
         }else{
@@ -197,10 +210,10 @@ class CountController extends AdminBaseController
         }
         $m1=Db::name('paper');
         $m2=Db::name('paper_old');
-        $m_user=Db::name('user');
+       
         $count=[];
         
-        $where_user=['user_type'=>2];
+        
         $where_back=$where;
         $where_old=$where;
         if(!empty($where['insert_time'])){
@@ -245,10 +258,10 @@ class CountController extends AdminBaseController
         //还款统计
         $count['back_count']=$count['back0_count']+$count['back1_count'];
         $count['back_money']=$count['back0_money']+$count['back1_money'];
-        
+        $admins=$m_user->where('user_type',1)->column('id,user_nickname');
         $this->assign('data',$data);
         $this->assign('count',$count);
-        
+        $this->assign('admins',$admins);
         return $this->fetch();
     }
     

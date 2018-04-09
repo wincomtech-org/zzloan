@@ -226,7 +226,13 @@ class UserController extends AdminBaseController
 
         }
     }
-
+   /*  http请求方式: POST
+    URL: https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
+    POST数据格式：json
+    POST数据例子：{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": 123}}}
+    
+    或者也可以使用以下POST数据创建字符串形式的二维码参数：
+    {"action_name": "QR_LIMIT_STR_SCENE", "action_info": {"scene": {"scene_str": "test"}}} */
     /**
      * 管理员个人信息修改
      * @adminMenu(
@@ -360,4 +366,35 @@ class UserController extends AdminBaseController
             $this->error('数据传入失败！');
         }
     }
+     
+    /**
+     * 生成二维码
+     * @adminMenu(
+     *     'name'   => '生成二维码',
+     *     'parent' => 'index',
+     *     'display'=> false,
+     *     'hasView'=> false,
+     *     'order'  => 10000,
+     *     'icon'   => '',
+     *     'remark' => '生成二维码',
+     *     'param'  => ''
+     * )
+     */
+    public function qrcode()
+    {
+        $id = cmf_get_current_admin_id();
+        $token=config('access_token');
+        $url='https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$token;
+        $data='{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id": '.$id.'}}}';
+ 
+        $res=zz_curl($url, $data);
+        if(isset($res['ticket'])){
+            Db::name('user')->where('id',$id)->update(['ticket'=>$res['ticket']]);
+            $this->success($res['ticket']);
+        }else{
+            $this->error('获取失败');
+        }
+        
+    }
+     
 }

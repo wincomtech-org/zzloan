@@ -64,25 +64,53 @@ class AdminIndexController extends AdminBaseController
     public function index()
     {
         
-        $where   = ['user_type'=>2];
-        $request = input('request.');
-
-        if (!empty($request['uid'])) {
-            $where['id'] = intval($request['uid']);
+        $where   = ['u.user_type'=>['eq',2]];
+        $request = $this->request->param();
+        $usersQuery = Db::name('user'); 
+        //如果未选择推荐管理员
+       
+        if(empty($request['aid'])){
+            $request['aid']=0;
+        }else{ 
+            $request['aid']=intval($request['aid']);
+            $openids=Db::name('user_wx')->where('aid',$request['aid'])->column('openid');
+            
+                $where['u.openid'] = ['in',$openids];
+            
+        }
+        if (empty($request['uid'])) {
+            $request['uid']='';
+        }else{
+            $where['u.id'] = ['eq',intval($request['uid'])];
         }
         $keywordComplex = [];
-        if (!empty($request['keyword'])) {
+        if (empty($request['keyword'])) {
+            $request['keyword']='';
+        }else{
             $keyword = $request['keyword'];
-
-            $keywordComplex['user_login|user_nickname|mobile']    = ['eq', $keyword];
+            $keywordComplex['u.user_login|u.user_nickname|u.mobile']    = ['eq', $keyword];
         }
-        $usersQuery = Db::name('user'); 
-        $list = $usersQuery->whereOr($keywordComplex)->where($where)->order("is_time desc,time desc,id desc")->paginate(10);
+       
+       
+        $list = $usersQuery 
+        ->alias('u')
+        ->join('cmf_user_wx wx','wx.openid=u.openid','left') 
+        ->order("u.is_time desc,u.time desc,u.id desc")
+        ->field('u.*,IFNULL(wx.aid,0) as aid')
+        ->whereOr($keywordComplex)
+        ->where($where)
+        ->paginate(10);
+       
         // 获取分页显示
-        $page = $list->render();
+        $page = $list->appends($request)->render();
+        $admins=$usersQuery->where('user_type',1)->column('id,user_nickname');
         $this->assign('list', $list);
         $this->assign('page', $page);
-       
+        $this->assign('data', $request);
+        $this->assign('admins0', $admins);
+        $admins[0]='无推荐';
+        $this->assign('admins', $admins);
+        
         // 渲染模板输出
         return $this->fetch();
     }
@@ -168,6 +196,7 @@ class AdminIndexController extends AdminBaseController
         $info['more']=json_decode($info['more'],true);
         $info['more']['mobile_file_url']=empty($info['more']['mobile_file_url'])?'':$info['more']['mobile_file_url'];
         $info['more']['mobile_file_name']=empty($info['more']['mobile_file_name'])?'':$info['more']['mobile_file_name'];
+        
         $this->assign('info',$info);
         return $this->fetch();
     }
@@ -271,20 +300,29 @@ class AdminIndexController extends AdminBaseController
     {
         
         $id = $this->request->param('id', 0, 'intval');
-        $where=['status'=>['gt',2],'borrower_id'=>['eq',$id]];
+        $m_user=Db::name("user");
+        $where_user=["id" => $id, "user_type" => 2];
+        $info=$m_user->where($where_user)->find();
+        
+        if($info){
+            $this->error('会员信息不存在');
+        }
+        $where=['status'=>['in',[3,4,5]],'borrower_id'=>['eq',$id]];
         $m_paper=Db::name('paper');
-        $count=$m_paper->where($where)->count();
-        if($count>0){
+        $tmp=$m_paper->where($where)->find();
+        if(!empty($tmp)){
             $this->error('会员有借款未还，不能删除！');
         }
         $m_paper->startTrans();
-        unset($where['status']);
-        
-        $m_paper->where($where)->delete();
-        
-        $result = Db::name("user")->where(["id" => $id, "user_type" => 2])->delete();
+        //删除未生效借款
+        unset($where['status']); 
+        $m_paper->where($where)->delete(); 
+       
+        $result = $m_user->where($where_user)->delete();
         if ($result) {
             $m_paper->commit();
+            //处理用户 
+            Db::name('user_wx')->where('openid',$info['openid'])->delete(); 
             $this->success("会员删除成功！");
         } else {
             $m_paper->rollback();

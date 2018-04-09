@@ -27,8 +27,7 @@ class RegisterController extends HomeBaseController
          
         if (cmf_is_user_login()) {
             $this->redirect(url('user/index/index'));
-        } else {
-           // return $this->fetch(":register");
+        } else { 
            $this->redirect(url('register'));
         }
     }
@@ -173,25 +172,8 @@ class RegisterController extends HomeBaseController
                 $wx=session('wx');
                 //定义头像名,有微信头像就获取，没有就指定默认
                 $data['avatar']='avatar/'.md5($data['user_login']).'.jpg';
-                //$imgSrc='http://wx.qlogo.cn/mmopen/vi_32/NtItl7iciafpn9B8zHC4Zhy0hsvYCvibbSeTlQpkDH44Il4RRZ4kwQ36l1PZ2DkMiaU0xibD3OeJxOLS6IY8u1pNTrQ/132';
-                if(empty($wx['headimgurl'])){ 
-                    zz_set_image('self.jpg', $data['avatar'],100,100,6); 
-                }else{
-                    $this->download($wx['headimgurl'],$data['avatar']);
-                }
-              /*   //用户性别
-                $data['sex']=$wx['sex'];
+                zz_set_image('self.jpg', $data['avatar'],100,100,6); 
                 $data['openid']=$wx['openid'];
-                $sexs=[0=>'未知',1=>'男',2=>'女'];
-                $wx0=[
-                    'openid'=>$wx['openid'],
-                    '性别'=>$sexs[$wx['sex']],
-                    '使用语言'=>$wx['language'],
-                    '所在地'=>$wx['country'].'-'.$wx['province'].'-'.$wx['city'],
-                    '头像'=>$wx['headimgurl']
-                ];
-                
-                $data['more']=json_encode($wx0); */
                 $result             = Db::name('user')->insertGetId($data);
                 if ($result !== false) {
                     $data   = Db::name("user")->where('id', $result)->find();
