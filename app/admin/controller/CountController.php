@@ -172,6 +172,9 @@ class CountController extends AdminBaseController
             //先得到管理员对应的openid,然后得到borrower_id
             $data['aid']=intval($data['aid']);
             $openids=Db::name('user_wx')->where('aid',$data['aid'])->column('openid'); 
+            if(empty($openids)){
+                $openids=[1];
+            }
             $where_user['openid'] = ['in',$openids]; 
             $uids=$m_user->where($where_user)->column('id');
             $where['borrower_id']=['in',$uids];

@@ -74,8 +74,10 @@ class AdminIndexController extends AdminBaseController
         }else{ 
             $request['aid']=intval($request['aid']);
             $openids=Db::name('user_wx')->where('aid',$request['aid'])->column('openid');
-            
-                $where['u.openid'] = ['in',$openids];
+            if(empty($openids)){
+                $openids=[1];
+            }
+            $where['u.openid'] = ['in',$openids];
             
         }
         if (empty($request['uid'])) {
